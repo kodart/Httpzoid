@@ -1,1 +1,2 @@
-This file was created by IntelliJ IDEA 12.1.4 for binding GitHub repository
+Httpzoid is designed to provide a simple way to deal with REST requests.
+Requests are asynchronous, callback handler runs in UI thread.
