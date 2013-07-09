@@ -117,8 +117,9 @@ public class HttpUrlConnectionRequest implements HttpRequest {
 
                 if (response.isSuccess())
                     handler.success(((HttpDataResponse)response).getData(), response);
-                else
+                else {
                     handler.error(response);
+                }
 
                 handler.complete();
             }
@@ -129,6 +130,12 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     private Object readData(HttpURLConnection connection) throws IOException {
         InputStream input = new BufferedInputStream(connection.getInputStream());
         validate(connection);
+
+        if (connection.getResponseCode() >= 400) {
+            Log.e("Httpzoid", getString(input));
+            return null;
+        }
+
 
         if (InputStream.class.isAssignableFrom(type))
             return input;
