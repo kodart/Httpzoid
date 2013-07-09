@@ -1,6 +1,6 @@
 package com.kodart.httpzoid;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -8,27 +8,27 @@ import java.net.URL;
  */
 public class HttpUrlConnection implements Http {
 
-    private HttpRequest request(String url, String method) throws IOException {
+    private HttpRequest request(String url, String method) throws MalformedURLException {
         return new HttpRequestUrlConnection(new URL(url), method);
     }
 
     @Override
-    public HttpRequest get(String url) throws IOException {
+    public HttpRequest get(String url) throws MalformedURLException {
         return request(url, "GET");
     }
 
     @Override
-    public HttpRequest post(String url) throws IOException {
+    public HttpRequest post(String url) throws MalformedURLException {
         return request(url, "POST");
     }
 
     @Override
-    public HttpRequest put(String url) throws IOException {
+    public HttpRequest put(String url) throws MalformedURLException {
         return request(url, "PUT");
     }
 
     @Override
-    public HttpRequest delete(String url) throws IOException {
+    public HttpRequest delete(String url) throws MalformedURLException {
         return request(url, "DELETE");
     }
 }
