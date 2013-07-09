@@ -9,7 +9,7 @@ import java.net.URL;
 public class HttpUrlConnection implements Http {
 
     private HttpRequest request(String url, String method) throws MalformedURLException {
-        return new HttpRequestUrlConnection(new URL(url), method);
+        return new HttpUrlConnectionRequest(new URL(url), method);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.kodart.httpzoid;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -13,10 +14,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * (c) Artur Sharipov
  */
-public class HttpRequestUrlConnection implements HttpRequest {
+public class HttpUrlConnectionRequest implements HttpRequest {
 
     private static final int DEFAULT_TIMEOUT = 10000;
     private WeakReference<ResponseHandler> handlerRef = new WeakReference<ResponseHandler>(new ResponseHandler());
@@ -32,7 +34,7 @@ public class HttpRequestUrlConnection implements HttpRequest {
     private Class type;
     private Object data;
 
-    public HttpRequestUrlConnection(URL url, String method) {
+    public HttpUrlConnectionRequest(URL url, String method) {
         this.url = url;
         this.method = method;
     }
@@ -90,10 +92,16 @@ public class HttpRequestUrlConnection implements HttpRequest {
                     connection = (HttpURLConnection)url.openConnection(proxy);
                     init(connection);
                     sendData(connection);
-                    return new HttpResponse(readData(connection), connection);
+                    return new HttpDataResponse(readData(connection), connection);
+                }
+                catch (HttpzoidException e) {
+                    return new HttpResponse(connection);
                 }
                 catch (IOException e) {
-                    return new HttpResponse();
+                    return new HttpResponse(connection);
+                }
+                catch (Throwable e) {
+                    return new HttpResponse(connection);
                 }
                 finally {
                     if (connection != null)
@@ -106,6 +114,11 @@ public class HttpRequestUrlConnection implements HttpRequest {
                 ResponseHandler handler = handlerRef.get();
                 if (handler == null)
                     return;
+
+                if (response.isSuccess())
+                    handler.success(((HttpDataResponse)response).getData(), response);
+                else
+                    handler.error(response);
 
                 handler.complete();
             }
@@ -120,7 +133,23 @@ public class HttpRequestUrlConnection implements HttpRequest {
         if (InputStream.class.isAssignableFrom(type))
             return input;
 
+        if (type.equals(String.class)) {
+            return getString(input);
+        }
+
         return mapper.fromJson(new InputStreamReader(input), type);
+    }
+
+    private String getString(InputStream input) throws IOException {
+        int bytes;
+        char[] buffer = new char[100 * 1024];
+        StringBuilder builder = new StringBuilder();
+        // todo need to find content encoding / getContentEncoding doesn't work
+        InputStreamReader reader = new InputStreamReader(input, "UTF-8");
+        while ((bytes = reader.read(buffer)) != -1) {
+            builder.append(buffer, 0, bytes);
+        }
+        return builder.toString();
     }
 
     private void sendData(HttpURLConnection connection) throws IOException {
@@ -156,9 +185,9 @@ public class HttpRequestUrlConnection implements HttpRequest {
         }
     }
 
-    private void validate(HttpURLConnection connection) {
+    private void validate(HttpURLConnection connection) throws NetworkAuthenticationException {
         if (!url.getHost().equals(connection.getURL().getHost())) {
-//            throw new NetworkAuthenticationException();
+            throw new NetworkAuthenticationException();
         }
     }
 }
