@@ -11,8 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -46,8 +45,8 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     }
 
     @Override
-    public HttpRequest headers(Map<String, String> headers) {
-        this.headers = headers;
+    public HttpRequest setHeader(String key, String value) {
+        headers.put(key, value);
         return this;
     }
 
@@ -179,6 +178,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                     outputStream.write(buffer, 0, bytes);
                 }
             } else {
+                connection.setRequestProperty("Content-Type", "application/json");
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
                 String json = mapper.toJson(data);
                 writer.write(json);
@@ -195,6 +195,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         connection.setRequestMethod(method);
         connection.setConnectTimeout(timeout);
         connection.setReadTimeout(timeout);
+
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             connection.setRequestProperty(entry.getKey(), entry.getValue());
         }

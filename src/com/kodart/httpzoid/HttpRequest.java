@@ -2,11 +2,10 @@ package com.kodart.httpzoid;
 
 import java.io.IOException;
 import java.net.Proxy;
-import java.util.Map;
 
 public interface HttpRequest {
     public HttpRequest data(Object data) throws IOException;
-    public HttpRequest headers(Map<String, String> headers);
+    public HttpRequest setHeader(String key, String value);
     public HttpRequest handler(ResponseHandler handler);
 
     public HttpRequest timeout(int timeout);
