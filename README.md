@@ -31,7 +31,7 @@ http.post("http://example.com/users")
     }).execute();
 ```
 
-Httpzoid works may work with objects or stream directly
+Httpzoid works with objects or stream directly
 ```java
 Http http = HttpFactory.create();
 http.get("http://example.com/users")
