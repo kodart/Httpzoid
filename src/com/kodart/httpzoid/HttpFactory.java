@@ -5,6 +5,6 @@ package com.kodart.httpzoid;
  */
 public class HttpFactory {
     public static Http create() {
-        return new HttpUrlConnection();
+        return new HttpUrlConnection(new JsonHttpSerializer());
     }
 }

@@ -2,7 +2,6 @@ package com.kodart.httpzoid;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import com.google.gson.Gson;
 
 import java.io.*;
 import java.lang.ref.WeakReference;
@@ -22,20 +21,21 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     private static final int DEFAULT_TIMEOUT = 60000;
     private WeakReference<ResponseHandler> handlerRef = new WeakReference<ResponseHandler>(new ResponseHandler());
 
-    private Gson mapper = new Gson();
     private Proxy proxy = Proxy.NO_PROXY;
-
-    private URL url;
-    private String method;
     private int timeout = DEFAULT_TIMEOUT;
 
     private Map<String, String> headers = new HashMap<String, String>();
     private Class type;
     private Object data;
 
-    public HttpUrlConnectionRequest(URL url, String method) {
+    private URL url;
+    private String method;
+    private HttpSerializer serializer;
+
+    public HttpUrlConnectionRequest(URL url, String method, HttpSerializer serializer) {
         this.url = url;
         this.method = method;
+        this.serializer = serializer;
     }
 
     @Override
@@ -148,7 +148,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             return getString(input);
         }
 
-        return mapper.fromJson(new InputStreamReader(input), type);
+        return serializer.deserialize(getString(input), type);
     }
 
     private String getString(InputStream input) throws IOException {
@@ -178,10 +178,9 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                     outputStream.write(buffer, 0, bytes);
                 }
             } else {
-                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Content-Type", serializer.getContentType());
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-                String json = mapper.toJson(data);
-                writer.write(json);
+                writer.write(serializer.serialize(data));
                 writer.flush();
             }
         }

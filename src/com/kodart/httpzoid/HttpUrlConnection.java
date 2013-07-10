@@ -8,8 +8,14 @@ import java.net.URL;
  */
 public class HttpUrlConnection implements Http {
 
+    private final HttpSerializer serializer;
+
+    public HttpUrlConnection(HttpSerializer serializer) {
+        this.serializer = serializer;
+    }
+
     private HttpRequest request(String url, String method) throws MalformedURLException {
-        return new HttpUrlConnectionRequest(new URL(url), method);
+        return new HttpUrlConnectionRequest(new URL(url), method, serializer);
     }
 
     @Override
