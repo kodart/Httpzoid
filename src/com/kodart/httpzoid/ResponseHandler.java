@@ -5,6 +5,6 @@ package com.kodart.httpzoid;
  */
 public class ResponseHandler<T> {
     public void success(T data, HttpResponse response){}
-    public void error(HttpResponse response){}
+    public void error(String message, HttpResponse response){}
     public void complete(){}
 }
