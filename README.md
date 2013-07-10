@@ -23,7 +23,7 @@ http.post("http://example.com/users")
         }
 
         @Override
-        public void error(HttpResponse response) {
+        public void error(String message, HttpResponse response) {
         }
 
         @Override
