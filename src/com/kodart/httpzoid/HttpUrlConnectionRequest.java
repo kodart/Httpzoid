@@ -84,9 +84,9 @@ public class HttpUrlConnectionRequest implements HttpRequest {
 
     @Override
     public void execute() throws IOException {
-        new AsyncTask<Void, Void, HttpResponse>() {
+        new AsyncTask<Void, Void, HttpDataResponse>() {
             @Override
-            protected HttpResponse doInBackground(Void... params) {
+            protected HttpDataResponse doInBackground(Void... params) {
                 HttpURLConnection connection = null;
                 try {
                     connection = (HttpURLConnection)url.openConnection(proxy);
@@ -95,13 +95,16 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                     return new HttpDataResponse(readData(connection), connection);
                 }
                 catch (HttpzoidException e) {
-                    return new HttpResponse(connection);
+                    Log.e("Httpzoid", e.getMessage());
+                    return new HttpDataResponse(connection);
                 }
                 catch (IOException e) {
-                    return new HttpResponse(connection);
+                    Log.e("Httpzoid", e.getMessage());
+                    return new HttpDataResponse(connection);
                 }
                 catch (Throwable e) {
-                    return new HttpResponse(connection);
+                    Log.e("Httpzoid", e.getMessage());
+                    return new HttpDataResponse(connection);
                 }
                 finally {
                     if (connection != null)
@@ -110,17 +113,16 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             }
 
             @Override
-            protected void onPostExecute(HttpResponse response) {
+            protected void onPostExecute(HttpDataResponse response) {
                 ResponseHandler handler = handlerRef.get();
                 if (handler == null)
                     return;
 
                 if (response.isSuccess())
-                    handler.success(((HttpDataResponse)response).getData(), response);
+                    handler.success(response.getData(), response);
                 else {
                     handler.error(response);
                 }
-
                 handler.complete();
             }
 
@@ -134,7 +136,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (connection.getResponseCode() >= 500) {
             String response = getString(input);
             Log.e("Httpzoid", response);
-            return null;
+            throw new ServerException(response);
         }
 
         if (InputStream.class.isAssignableFrom(type))

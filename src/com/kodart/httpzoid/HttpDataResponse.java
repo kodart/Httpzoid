@@ -13,7 +13,15 @@ public class HttpDataResponse extends HttpResponse {
         this.data = data;
     }
 
+    public HttpDataResponse(HttpURLConnection connection) {
+        super(connection);
+    }
+
     public Object getData() {
         return data;
+    }
+
+    public boolean isSuccess() {
+        return getResponseCode() < 300;
     }
 }

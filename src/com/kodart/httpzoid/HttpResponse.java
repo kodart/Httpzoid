@@ -26,8 +26,4 @@ public class HttpResponse {
     public Map<String, List<String>> getHeaders() {
         return connection.getHeaderFields();
     }
-
-    public boolean isSuccess() {
-        return getResponseCode() < 300;
-    }
 }
