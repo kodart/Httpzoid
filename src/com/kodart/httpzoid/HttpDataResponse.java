@@ -20,8 +20,4 @@ public class HttpDataResponse extends HttpResponse {
     public Object getData() {
         return data;
     }
-
-    public boolean isSuccess() {
-        return getResponseCode() < 300;
-    }
 }

@@ -118,7 +118,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                 if (handler == null)
                     return;
 
-                if (response.isSuccess())
+                if (response.getResponseCode() < 400)
                     handler.success(response.getData(), response);
                 else {
                     handler.error(response);
