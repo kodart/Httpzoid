@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class HttpUrlConnectionRequest implements HttpRequest {
 
-    private static final int DEFAULT_TIMEOUT = 10000;
+    private static final int DEFAULT_TIMEOUT = 60000;
     private WeakReference<ResponseHandler> handlerRef = new WeakReference<ResponseHandler>(new ResponseHandler());
 
     private Gson mapper = new Gson();
