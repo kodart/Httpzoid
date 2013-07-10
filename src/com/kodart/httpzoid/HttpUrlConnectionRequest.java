@@ -190,7 +190,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             return;
 
         if (data instanceof InputStream)
-            connection.setRequestProperty("Content-Type", "application/octet");
+            connection.setRequestProperty("Content-Type", "application/octet-stream");
         else
             connection.setRequestProperty("Content-Type", serializer.getContentType());
     }
