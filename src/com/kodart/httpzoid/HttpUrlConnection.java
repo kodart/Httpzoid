@@ -16,27 +16,31 @@ public class HttpUrlConnection implements Http {
         this.serializer = serializer;
     }
 
-    private HttpRequest request(String url, String method) throws MalformedURLException {
-        return new HttpUrlConnectionRequest(new URL(url), method, serializer);
+    private HttpRequest request(String url, String method) {
+        try {
+            return new HttpUrlConnectionRequest(new URL(url), method, serializer);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public HttpRequest get(String url) throws MalformedURLException {
+    public HttpRequest get(String url) {
         return request(url, "GET");
     }
 
     @Override
-    public HttpRequest post(String url) throws MalformedURLException {
+    public HttpRequest post(String url) {
         return request(url, "POST");
     }
 
     @Override
-    public HttpRequest put(String url) throws MalformedURLException {
+    public HttpRequest put(String url) {
         return request(url, "PUT");
     }
 
     @Override
-    public HttpRequest delete(String url) throws MalformedURLException {
+    public HttpRequest delete(String url) {
         return request(url, "DELETE");
     }
 }

@@ -1,17 +1,15 @@
 package com.kodart.httpzoid;
 
-import java.io.IOException;
-import java.net.URL;
-
 /**
+ * Http request creator.
+ * Malformed URL will throw runtime exception.
+ *
  * (c) Artur Sharipov
  */
 public interface Http {
-
-    public HttpRequest get(String url) throws IOException;
-    public HttpRequest post(String url) throws IOException;
-    public HttpRequest put(String url) throws IOException;
-    public HttpRequest delete(String url) throws IOException;
-
+    public HttpRequest get(String url);
+    public HttpRequest post(String url);
+    public HttpRequest put(String url);
+    public HttpRequest delete(String url);
 }
 

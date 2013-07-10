@@ -39,7 +39,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     }
 
     @Override
-    public HttpRequest data(Object data) throws IOException {
+    public HttpRequest data(Object data) {
         this.data = data;
         return this;
     }
@@ -82,7 +82,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     }
 
     @Override
-    public void execute() throws IOException {
+    public void execute() {
         new AsyncTask<Void, Void, HttpDataResponse>() {
             @Override
             protected HttpDataResponse doInBackground(Void... params) {

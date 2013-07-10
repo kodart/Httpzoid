@@ -4,7 +4,7 @@ public class XmlHttpSerializer implements HttpSerializer {
 
     @Override
     public String getContentType() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return "application/xml";
     }
 
     @Override
