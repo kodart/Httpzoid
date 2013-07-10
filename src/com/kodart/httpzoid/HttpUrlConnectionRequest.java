@@ -164,25 +164,30 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (data == null)
             return;
 
-        connection.setDoOutput(true);
-        OutputStream outputStream = connection.getOutputStream();
+        OutputStream outputStream = null;
         try {
             if (data instanceof InputStream) {
                 byte[] buffer = new byte[64 * 1024];
                 int bytes;
+                connection.setDoOutput(true);
+                outputStream = connection.getOutputStream();
                 while ((bytes = ((InputStream)data).read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytes);
                 }
             } else {
                 connection.setRequestProperty("Content-Type", serializer.getContentType());
+                connection.setDoOutput(true);
+                outputStream = connection.getOutputStream();
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
                 writer.write(serializer.serialize(data));
                 writer.flush();
             }
         }
         finally {
-            outputStream.flush();
-            outputStream.close();
+            if (outputStream != null) {
+                outputStream.flush();
+                outputStream.close();
+            }
         }
     }
 
