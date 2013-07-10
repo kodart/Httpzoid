@@ -131,11 +131,11 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         InputStream input = new BufferedInputStream(connection.getInputStream());
         validate(connection);
 
-        if (connection.getResponseCode() >= 400) {
-            Log.e("Httpzoid", getString(input));
+        if (connection.getResponseCode() >= 500) {
+            String response = getString(input);
+            Log.e("Httpzoid", response);
             return null;
         }
-
 
         if (InputStream.class.isAssignableFrom(type))
             return input;
