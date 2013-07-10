@@ -20,11 +20,10 @@ import java.util.*;
 public class HttpUrlConnectionRequest implements HttpRequest {
 
     private static final int DEFAULT_TIMEOUT = 60000;
-    private WeakReference<ResponseHandler> handlerRef = new WeakReference<ResponseHandler>(new ResponseHandler());
-
     private Proxy proxy = Proxy.NO_PROXY;
     private int timeout = DEFAULT_TIMEOUT;
 
+    private ResponseHandler handler = new ResponseHandler();
     private Map<String, String> headers = new HashMap<String, String>();
     private Class type;
     private Object data;
@@ -65,7 +64,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
 
     @Override
     public HttpRequest handler(ResponseHandler handler) {
-        handlerRef = new WeakReference<ResponseHandler>(handler);
+        this.handler = handler;
         type = findType(handler);
         return this;
     }
@@ -114,10 +113,6 @@ public class HttpUrlConnectionRequest implements HttpRequest {
 
             @Override
             protected void onPostExecute(HttpDataResponse response) {
-                ResponseHandler handler = handlerRef.get();
-                if (handler == null)
-                    return;
-
                 if (response.getResponseCode() < 400)
                     handler.success(response.getData(), response);
                 else {
