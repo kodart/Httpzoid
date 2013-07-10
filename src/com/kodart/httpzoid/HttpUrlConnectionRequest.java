@@ -116,7 +116,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                 if (response.getResponseCode() < 400)
                     handler.success(response.getData(), response);
                 else {
-                    handler.error(response);
+                    handler.error((String)response.getData(), response);
                 }
                 handler.complete();
             }
@@ -144,7 +144,10 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             return getString(input);
         }
 
-        return serializer.deserialize(getString(input), type);
+        if (connection.getResponseCode() < 400)
+            return serializer.deserialize(getString(input), type);
+
+        return getString(input);
     }
 
     private String getString(InputStream input) throws IOException {
