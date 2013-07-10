@@ -45,7 +45,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     }
 
     @Override
-    public HttpRequest setHeader(String key, String value) {
+    public HttpRequest header(String key, String value) {
         headers.put(key, value);
         return this;
     }
@@ -164,31 +164,35 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (data == null)
             return;
 
-        OutputStream outputStream = null;
+        connection.setDoOutput(true);
+        OutputStream outputStream = connection.getOutputStream();
         try {
             if (data instanceof InputStream) {
                 byte[] buffer = new byte[64 * 1024];
                 int bytes;
-                connection.setDoOutput(true);
-                outputStream = connection.getOutputStream();
                 while ((bytes = ((InputStream)data).read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytes);
                 }
             } else {
-                connection.setRequestProperty("Content-Type", serializer.getContentType());
-                connection.setDoOutput(true);
-                outputStream = connection.getOutputStream();
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
                 writer.write(serializer.serialize(data));
                 writer.flush();
             }
         }
         finally {
-            if (outputStream != null) {
-                outputStream.flush();
-                outputStream.close();
-            }
+            outputStream.flush();
+            outputStream.close();
         }
+    }
+
+    private void setContentType(Object data, HttpURLConnection connection) {
+        if (headers.containsKey("Content-Type"))
+            return;
+
+        if (data instanceof InputStream)
+            connection.setRequestProperty("Content-Type", "application/octet");
+        else
+            connection.setRequestProperty("Content-Type", serializer.getContentType());
     }
 
     private void init(HttpURLConnection connection) throws ProtocolException {
@@ -199,6 +203,8 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             connection.setRequestProperty(entry.getKey(), entry.getValue());
         }
+
+        setContentType(data, connection);
     }
 
     private void validate(HttpURLConnection connection) throws NetworkAuthenticationException {
