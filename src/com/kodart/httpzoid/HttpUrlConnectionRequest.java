@@ -168,7 +168,8 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (data == null)
             return;
 
-        OutputStream outputStream = connection.getOutputStream();
+        connection.setDoOutput(true);
+        OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
         try {
             if (data instanceof InputStream) {
                 byte[] buffer = new byte[64 * 1024];
@@ -176,16 +177,14 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                 while ((bytes = ((InputStream)data).read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytes);
                 }
-                outputStream.flush();
-
             } else {
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
                 writer.write(serializer.serialize(data));
                 writer.flush();
-                writer.close();
             }
         }
         finally {
+            outputStream.flush();
             outputStream.close();
         }
     }
