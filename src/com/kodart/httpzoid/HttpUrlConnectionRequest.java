@@ -151,6 +151,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         int bytes;
         char[] buffer = new char[100 * 1024];
         StringBuilder builder = new StringBuilder();
+
         // todo need to find content encoding / getContentEncoding doesn't work
         InputStreamReader reader = new InputStreamReader(input, "UTF-8");
         while ((bytes = reader.read(buffer)) != -1) {
@@ -174,7 +175,9 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                 }
             } else {
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-                mapper.toJson(data, writer);
+                String json = mapper.toJson(data);
+                writer.write(json);
+                writer.flush();
             }
         }
         finally {
