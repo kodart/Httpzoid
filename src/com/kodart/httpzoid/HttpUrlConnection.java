@@ -1,5 +1,7 @@
 package com.kodart.httpzoid;
 
+import com.kodart.httpzoid.serializers.HttpSerializer;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 

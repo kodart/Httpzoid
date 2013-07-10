@@ -1,4 +1,4 @@
-package com.kodart.httpzoid;
+package com.kodart.httpzoid.serializers;
 
 public class XmlHttpSerializer implements HttpSerializer {
 

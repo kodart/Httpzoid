@@ -1,5 +1,7 @@
 package com.kodart.httpzoid;
 
+import com.kodart.httpzoid.serializers.JsonHttpSerializer;
+
 /**
  * (c) Artur Sharipov
  */

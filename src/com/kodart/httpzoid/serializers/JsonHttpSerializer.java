@@ -1,4 +1,4 @@
-package com.kodart.httpzoid;
+package com.kodart.httpzoid.serializers;
 
 import com.google.gson.Gson;
 

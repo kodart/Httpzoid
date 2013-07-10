@@ -2,6 +2,7 @@ package com.kodart.httpzoid;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import com.kodart.httpzoid.serializers.HttpSerializer;
 
 import java.io.*;
 import java.lang.ref.WeakReference;

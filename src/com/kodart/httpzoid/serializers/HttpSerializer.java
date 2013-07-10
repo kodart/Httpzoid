@@ -1,4 +1,4 @@
-package com.kodart.httpzoid;
+package com.kodart.httpzoid.serializers;
 
 /**
  * (c) Artur Sharipov
