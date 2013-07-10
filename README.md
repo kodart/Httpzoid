@@ -31,3 +31,23 @@ http.post("http://example.com/users")
     }).execute();
 ```
 
+Httpzoid works may work with objects or stream directly
+```java
+Http http = HttpFactory.create();
+http.get("http://example.com/users")
+    .handler(new ResponseHandler<User[]>() {
+        @Override
+        public void success(User[] users, HttpResponse response) {
+        }
+    }).execute();
+
+InputStream input = new FileInputStream("avatar.jpg");
+http.post("http://example.com/users/1/avatar")
+    .data(input)
+    .handler(new ResponseHandler<Void>() {
+        @Override
+        public void complete() {
+            input.close();
+        }
+    }).execute();
+```
