@@ -139,6 +139,9 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             throw new ServerException(response);
         }
 
+        if (type.equals(Void.class))
+            return null;
+
         if (InputStream.class.isAssignableFrom(type))
             return input;
 
