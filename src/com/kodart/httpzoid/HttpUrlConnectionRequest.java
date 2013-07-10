@@ -152,12 +152,12 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     }
 
     private String getString(InputStream input) throws IOException {
-        int bytes;
-        char[] buffer = new char[100 * 1024];
         StringBuilder builder = new StringBuilder();
 
         // todo need to find content encoding / getContentEncoding doesn't work
         InputStreamReader reader = new InputStreamReader(input, "UTF-8");
+        int bytes;
+        char[] buffer = new char[64 * 1024];
         while ((bytes = reader.read(buffer)) != -1) {
             builder.append(buffer, 0, bytes);
         }
