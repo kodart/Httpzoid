@@ -125,18 +125,18 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     }
 
     private Object readData(HttpURLConnection connection) throws IOException {
-        InputStream input = new BufferedInputStream(connection.getInputStream());
-        validate(connection);
-
         if (connection.getResponseCode() >= 500) {
-            String response = getString(input);
+            String response = getString(connection.getErrorStream());
             Log.e("Httpzoid", response);
             throw new ServerException(response);
         }
 
         if (connection.getResponseCode() >= 400) {
-            return getString(input);
+            return getString(connection.getErrorStream());
         }
+
+        InputStream input = new BufferedInputStream(connection.getInputStream());
+        validate(connection);
 
         if (type.equals(Void.class))
             return null;
@@ -168,7 +168,6 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (data == null)
             return;
 
-        connection.setDoOutput(true);
         OutputStream outputStream = connection.getOutputStream();
         try {
             if (data instanceof InputStream) {
@@ -177,14 +176,16 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                 while ((bytes = ((InputStream)data).read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytes);
                 }
+                outputStream.flush();
+
             } else {
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
                 writer.write(serializer.serialize(data));
                 writer.flush();
+                writer.close();
             }
         }
         finally {
-            outputStream.flush();
             outputStream.close();
         }
     }
