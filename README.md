@@ -1,3 +1,4 @@
+# Httpzoid - Android REST (JSON) Client
 ## Overview
 Httpzoid is designed to provide a simple way to deal with REST requests.
 Requests are asynchronous, callback handler runs in UI thread.
