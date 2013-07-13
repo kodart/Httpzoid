@@ -6,7 +6,7 @@ Requests are asynchronous, callback handler runs in UI thread.
 ## Quick start
 This sample will make a post request to the specified url and send User object in JSON format.
 ```java
-Http http = HttpFactory.create((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE));
+Http http = HttpFactory.create(context);
 
 http.post("http://example.com/users")
     .data(new User("John"))
@@ -15,7 +15,7 @@ http.post("http://example.com/users")
 
 Request with callbacks.
 ```java
-Http http = HttpFactory.create((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE));
+Http http = HttpFactory.create(context);
 http.post("http://example.com/users")
     .data(new User("John"))
     .handler(new ResponseHandler<Void>() {
@@ -39,7 +39,7 @@ http.post("http://example.com/users")
 
 Httpzoid works with objects or stream directly
 ```java
-Http http = HttpFactory.create((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE));
+Http http = HttpFactory.create(context);
 http.get("http://example.com/users")
     .handler(new ResponseHandler<User[]>() {
         @Override
