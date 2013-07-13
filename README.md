@@ -7,7 +7,6 @@ Requests are asynchronous, callback handler runs in UI thread.
 This sample will make a post request to the specified url and send User object in JSON format.
 ```java
 Http http = HttpFactory.create(context);
-
 http.post("http://example.com/users")
     .data(new User("John"))
     .execute();

@@ -59,18 +59,6 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         return this;
     }
 
-    private Class findType(ResponseHandler handler) {
-        Method[] methods = handler.getClass().getMethods();
-        for(Method method : methods) {
-            if (method.getName().equals("success")) {
-                Class param = method.getParameterTypes()[0];
-                if (!param.equals(Object.class))
-                    return param;
-            }
-        }
-        return Object.class;
-    }
-
     @Override
     public HttpRequest handler(ResponseHandler handler) {
         this.handler = handler;
@@ -244,5 +232,17 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (!url.getHost().equals(connection.getURL().getHost())) {
             throw new NetworkAuthenticationException();
         }
+    }
+
+    private Class findType(ResponseHandler handler) {
+        Method[] methods = handler.getClass().getMethods();
+        for(Method method : methods) {
+            if (method.getName().equals("success")) {
+                Class param = method.getParameterTypes()[0];
+                if (!param.equals(Object.class))
+                    return param;
+            }
+        }
+        return Object.class;
     }
 }

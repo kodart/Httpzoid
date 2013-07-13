@@ -19,7 +19,7 @@ public class HttpUrlConnection implements Http {
         this.network = network;
     }
 
-    private HttpRequest request(String url, String method) {
+    public HttpRequest request(String url, String method) {
         try {
             return new HttpUrlConnectionRequest(new URL(url), method, serializer, network);
         } catch (MalformedURLException e) {
