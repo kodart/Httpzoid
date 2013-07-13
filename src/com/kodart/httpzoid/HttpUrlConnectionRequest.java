@@ -221,6 +221,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             return;
         if (contentType != null) {
             connection.setRequestProperty("Content-Type", contentType);
+            return;
         }
 
         if (data instanceof InputStream)
