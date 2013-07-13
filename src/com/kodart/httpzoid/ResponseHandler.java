@@ -19,7 +19,15 @@ public class ResponseHandler<T> {
     public void error(String message, HttpResponse response){}
 
     /**
+     * Notifies about network failure (offline, authentication error, etc.)
+     * @param error
+     */
+    public void failure(NetworkError error){}
+
+    /**
      * Notifies about request complete (happens after success/error)
      */
     public void complete(){}
+
+
 }

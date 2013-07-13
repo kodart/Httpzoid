@@ -5,7 +5,6 @@ import android.util.Log;
 import com.kodart.httpzoid.serializers.HttpSerializer;
 
 import java.io.*;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -24,6 +23,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     private int timeout = DEFAULT_TIMEOUT;
 
     private ResponseHandler handler = new ResponseHandler();
+
     private Map<String, String> headers = new HashMap<String, String>();
     private Class type;
     private Object data;
@@ -31,11 +31,13 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     private URL url;
     private String method;
     private HttpSerializer serializer;
+    private Network network;
 
-    public HttpUrlConnectionRequest(URL url, String method, HttpSerializer serializer) {
+    public HttpUrlConnectionRequest(URL url, String method, HttpSerializer serializer, Network network) {
         this.url = url;
         this.method = method;
         this.serializer = serializer;
+        this.network = network;
     }
 
     @Override
@@ -83,27 +85,49 @@ public class HttpUrlConnectionRequest implements HttpRequest {
 
     @Override
     public void execute() {
-        new AsyncTask<Void, Void, HttpDataResponse>() {
+        if (network.isOffline()) {
+            handler.failure(NetworkError.Offline);
+            handler.complete();
+            return;
+        }
+
+        new AsyncTask<Void, Void, Action>() {
             @Override
-            protected HttpDataResponse doInBackground(Void... params) {
+            protected Action doInBackground(Void... params) {
                 HttpURLConnection connection = null;
                 try {
                     connection = (HttpURLConnection)url.openConnection(proxy);
                     init(connection);
                     sendData(connection);
-                    return new HttpDataResponse(readData(connection), connection);
+                    final HttpDataResponse response = new HttpDataResponse(readData(connection), connection);
+                    return new Action() {
+                        @Override
+                        public void call() {
+                            if (response.getResponseCode() < 400)
+                                handler.success(response.getData(), response);
+                            else {
+                                handler.error((String)response.getData(), response);
+                            }
+                        }
+                    };
                 }
-                catch (HttpzoidException e) {
+                catch (final HttpzoidException e) {
                     Log.e("Httpzoid", e.getMessage());
-                    return new HttpDataResponse(connection);
-                }
-                catch (IOException e) {
-                    Log.e("Httpzoid", e.getMessage());
-                    return new HttpDataResponse(connection);
+                    return new Action() {
+                        @Override
+                        public void call() {
+                            handler.failure(e.getNetworkError());
+                        }
+                    };
                 }
                 catch (Throwable e) {
-                    Log.e("Httpzoid", e.getMessage());
-                    return new HttpDataResponse(connection);
+                    Log.wtf("Httpzoid", e.getMessage());
+                    return new Action() {
+                        @Override
+                        public void call() {
+                            handler.failure(NetworkError.Unknown);
+                        }
+                    };
                 }
                 finally {
                     if (connection != null)
@@ -112,12 +136,8 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             }
 
             @Override
-            protected void onPostExecute(HttpDataResponse response) {
-                if (response.getResponseCode() < 400)
-                    handler.success(response.getData(), response);
-                else {
-                    handler.error((String)response.getData(), response);
-                }
+            protected void onPostExecute(Action action) {
+                action.call();
                 handler.complete();
             }
 
@@ -127,8 +147,8 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     private Object readData(HttpURLConnection connection) throws IOException {
         if (connection.getResponseCode() >= 500) {
             String response = getString(connection.getErrorStream());
-            Log.e("Httpzoid", response);
-            throw new ServerException(response);
+            Log.wtf("Httpzoid", response);
+            return response;
         }
 
         if (connection.getResponseCode() >= 400) {
@@ -203,11 +223,9 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         connection.setRequestMethod(method);
         connection.setConnectTimeout(timeout);
         connection.setReadTimeout(timeout);
-
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             connection.setRequestProperty(entry.getKey(), entry.getValue());
         }
-
         setContentType(data, connection);
     }
 

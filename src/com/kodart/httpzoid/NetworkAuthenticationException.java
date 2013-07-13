@@ -5,6 +5,6 @@ package com.kodart.httpzoid;
  */
 public class NetworkAuthenticationException extends HttpzoidException {
     public NetworkAuthenticationException() {
-        super("Network authentication required");
+        super("Network authentication required", NetworkError.AuthenticationRequired);
     }
 }
