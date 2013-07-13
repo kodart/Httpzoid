@@ -1,11 +1,9 @@
 package com.kodart.httpzoid;
 
-import java.io.IOException;
-
 /**
  * (c) Artur Sharipov
  */
-public class HttpzoidException extends IOException {
+public class HttpzoidException extends Exception {
     private NetworkError error;
 
     public HttpzoidException(String message, NetworkError error) {

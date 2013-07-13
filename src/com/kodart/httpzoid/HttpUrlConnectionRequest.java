@@ -106,6 +106,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                         }
                     };
                 }
+
                 catch (final HttpzoidException e) {
                     Log.e("Httpzoid", e.getMessage());
                     return new Action() {
@@ -115,8 +116,17 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                         }
                     };
                 }
+                catch (final ProtocolException e) {
+                    Log.e("Httpzoid", e.getMessage());
+                    return new Action() {
+                        @Override
+                        public void call() {
+                            handler.failure(NetworkError.UnsupportedMethod);
+                        }
+                    };
+                }
                 catch (Throwable e) {
-                    Log.wtf("Httpzoid", e.getMessage());
+                    Log.wtf("Httpzoid", e);
                     return new Action() {
                         @Override
                         public void call() {
@@ -139,7 +149,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         }.execute();
     }
 
-    private Object readData(HttpURLConnection connection) throws IOException {
+    private Object readData(HttpURLConnection connection) throws NetworkAuthenticationException, IOException {
         if (connection.getResponseCode() >= 500) {
             String response = getString(connection.getErrorStream());
             Log.wtf("Httpzoid", response);

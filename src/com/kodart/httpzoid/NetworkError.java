@@ -6,5 +6,6 @@ package com.kodart.httpzoid;
 public enum NetworkError {
     Offline,
     AuthenticationRequired,
+    UnsupportedMethod,
     Unknown
 }
