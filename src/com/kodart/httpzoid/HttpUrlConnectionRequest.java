@@ -21,6 +21,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     private static final int DEFAULT_TIMEOUT = 60000;
     private Proxy proxy = Proxy.NO_PROXY;
     private int timeout = DEFAULT_TIMEOUT;
+    private String contentType;
 
     private ResponseHandler handler = new ResponseHandler();
 
@@ -49,6 +50,12 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     @Override
     public HttpRequest header(String key, String value) {
         headers.put(key, value);
+        return this;
+    }
+
+    @Override
+    public HttpRequest contentType(String value) {
+        contentType = value;
         return this;
     }
 
@@ -212,6 +219,9 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     private void setContentType(Object data, HttpURLConnection connection) {
         if (headers.containsKey("Content-Type"))
             return;
+        if (contentType != null) {
+            connection.setRequestProperty("Content-Type", contentType);
+        }
 
         if (data instanceof InputStream)
             connection.setRequestProperty("Content-Type", "application/octet-stream");
