@@ -106,33 +106,17 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                         }
                     };
                 }
-
                 catch (final HttpzoidException e) {
                     Log.e("Httpzoid", e.getMessage());
-                    return new Action() {
-                        @Override
-                        public void call() {
-                            handler.failure(e.getNetworkError());
-                        }
-                    };
+                    return new NetworkFailureAction(handler, e.getNetworkError());
                 }
                 catch (final ProtocolException e) {
                     Log.e("Httpzoid", e.getMessage());
-                    return new Action() {
-                        @Override
-                        public void call() {
-                            handler.failure(NetworkError.UnsupportedMethod);
-                        }
-                    };
+                    return new NetworkFailureAction(handler, NetworkError.UnsupportedMethod);
                 }
                 catch (Throwable e) {
                     Log.wtf("Httpzoid", e);
-                    return new Action() {
-                        @Override
-                        public void call() {
-                            handler.failure(NetworkError.Unknown);
-                        }
-                    };
+                    return new NetworkFailureAction(handler, NetworkError.Unknown);
                 }
                 finally {
                     if (connection != null)
