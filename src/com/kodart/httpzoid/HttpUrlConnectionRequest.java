@@ -17,7 +17,7 @@ import java.util.*;
  * (c) Artur Sharipov
  */
 public class HttpUrlConnectionRequest implements HttpRequest {
-
+    private static final String TAG = "Httpzoid";
     private static final int DEFAULT_TIMEOUT = 60000;
     private Proxy proxy = Proxy.NO_PROXY;
     private int timeout = DEFAULT_TIMEOUT;
@@ -107,15 +107,15 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                     };
                 }
                 catch (final HttpzoidException e) {
-                    Log.e("Httpzoid", e.getMessage());
+                    Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, e.getNetworkError());
                 }
                 catch (final ProtocolException e) {
-                    Log.e("Httpzoid", e.getMessage());
+                    Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, NetworkError.UnsupportedMethod);
                 }
                 catch (Throwable e) {
-                    Log.wtf("Httpzoid", e);
+                    Log.wtf(TAG, e);
                     return new NetworkFailureAction(handler, NetworkError.Unknown);
                 }
                 finally {
@@ -136,7 +136,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     private Object readData(HttpURLConnection connection) throws NetworkAuthenticationException, IOException {
         if (connection.getResponseCode() >= 500) {
             String response = getString(connection.getErrorStream());
-            Log.wtf("Httpzoid", response);
+            Log.e(TAG, response);
             return response;
         }
 
