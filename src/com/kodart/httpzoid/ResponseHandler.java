@@ -1,6 +1,7 @@
 package com.kodart.httpzoid;
 
 /**
+ * Response callback handler
  * (c) Artur Sharipov
  */
 public class ResponseHandler<T> {
@@ -25,9 +26,7 @@ public class ResponseHandler<T> {
     public void failure(NetworkError error){}
 
     /**
-     * Notifies about request complete (happens after success/error)
+     * Notifies about request complete (happens after success/error/failure)
      */
     public void complete(){}
-
-
 }

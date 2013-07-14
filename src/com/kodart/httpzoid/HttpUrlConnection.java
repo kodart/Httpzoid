@@ -1,6 +1,5 @@
 package com.kodart.httpzoid;
 
-import android.net.ConnectivityManager;
 import com.kodart.httpzoid.serializers.HttpSerializer;
 
 import java.net.MalformedURLException;
@@ -19,6 +18,7 @@ public class HttpUrlConnection implements Http {
         this.network = network;
     }
 
+    @Override
     public HttpRequest request(String url, String method) {
         try {
             return new HttpUrlConnectionRequest(new URL(url), method, serializer, network);
