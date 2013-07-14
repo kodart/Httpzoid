@@ -32,7 +32,7 @@ public interface HttpRequest {
 
     /**
      * Set request timeout. Default value is 60 sec.
-     * @param timeout timeout in ms
+     * @param timeout timeout in ms, 0 defines infinite timeout.
      * @return current request for chaining
      */
     public HttpRequest timeout(int timeout);

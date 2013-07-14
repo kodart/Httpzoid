@@ -2,14 +2,12 @@ package com.kodart.httpzoid;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import com.google.gson.JsonParseException;
 import com.kodart.httpzoid.serializers.HttpSerializer;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.Proxy;
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 
 
@@ -106,12 +104,20 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                         }
                     };
                 }
-                catch (final HttpzoidException e) {
+                catch (HttpzoidException e) {
                     Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, e.getNetworkError());
                 }
-                catch (final ProtocolException e) {
+                catch (SocketTimeoutException e) {
                     Log.e(TAG, e.getMessage());
+                    return new NetworkFailureAction(handler, NetworkError.Timeout);
+                }
+                catch (JsonParseException e) {
+                    Log.e(TAG, e.getMessage());
+                    return new NetworkFailureAction(handler, NetworkError.InvalidObjectFormat);
+                }
+                catch (ProtocolException e) {
+                    Log.wtf(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, NetworkError.UnsupportedMethod);
                 }
                 catch (Throwable e) {
