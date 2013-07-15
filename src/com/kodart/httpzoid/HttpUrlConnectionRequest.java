@@ -104,17 +104,6 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                         }
                     };
 
-//                }
-//                catch (UnauthorizedException e) {
-//                    Log.e(TAG, e.getMessage());
-//                    final HttpURLConnection finalConnection = connection;
-//                    return new Action() {
-//                        @Override
-//                        public void call() {
-//                            handler.error("Unauthorized access", new HttpResponse(finalConnection));
-//                        }
-//                    };
-
                 } catch (HttpzoidException e) {
                     Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, e.getNetworkError());
@@ -169,7 +158,10 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (type.equals(String.class)) {
             return new HttpDataResponse(getString(input), responseCode, connection.getHeaderFields());
         }
-        return new HttpDataResponse(serializer.deserialize(getString(input), type), responseCode, connection.getHeaderFields());
+
+        String value = getString(input);
+        Log.d(TAG, "RECEIVED: " + value);
+        return new HttpDataResponse(serializer.deserialize(value, type), responseCode, connection.getHeaderFields());
     }
 
     private int getResponseCode(HttpURLConnection connection) throws IOException {
@@ -213,13 +205,14 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             }
             else if (data instanceof String) {
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
+                Log.d(TAG, "SENT: " + data);
                 writer.write((String)data);
                 writer.flush();
             }
             else {
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
                 String output = serializer.serialize(data);
-                Log.d(TAG, output);
+                Log.d(TAG, "SENT: " + output);
                 writer.write(output);
                 writer.flush();
             }
