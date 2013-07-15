@@ -92,17 +92,29 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                     connection = (HttpURLConnection) url.openConnection(proxy);
                     init(connection);
                     sendData(connection);
-                    final HttpDataResponse response = new HttpDataResponse(readData(connection), connection);
+                    final HttpDataResponse response = readData(connection);
                     return new Action() {
                         @Override
                         public void call() {
-                            if (response.getResponseCode() < 400)
+                            if (response.getCode() < 400)
                                 handler.success(response.getData(), response);
                             else {
                                 handler.error((String) response.getData(), response);
                             }
                         }
                     };
+
+//                }
+//                catch (UnauthorizedException e) {
+//                    Log.e(TAG, e.getMessage());
+//                    final HttpURLConnection finalConnection = connection;
+//                    return new Action() {
+//                        @Override
+//                        public void call() {
+//                            handler.error("Unauthorized access", new HttpResponse(finalConnection));
+//                        }
+//                    };
+
                 } catch (HttpzoidException e) {
                     Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, e.getNetworkError());
@@ -133,15 +145,16 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         }.execute());
     }
 
-    private Object readData(HttpURLConnection connection) throws NetworkAuthenticationException, IOException {
-        if (getResponseCode(connection) >= 500) {
+    private HttpDataResponse readData(HttpURLConnection connection) throws NetworkAuthenticationException, IOException {
+        int responseCode = getResponseCode(connection);
+        if (responseCode >= 500) {
             String response = getString(connection.getErrorStream());
             Log.e(TAG, response);
-            return response;
+            return new HttpDataResponse(response, responseCode, connection.getHeaderFields());
         }
 
-        if (getResponseCode(connection) >= 400) {
-            return getString(connection.getErrorStream());
+        if (responseCode >= 400) {
+            return new HttpDataResponse(getString(connection.getErrorStream()), responseCode, connection.getHeaderFields());
         }
 
         InputStream input = new BufferedInputStream(connection.getInputStream());
@@ -151,28 +164,29 @@ public class HttpUrlConnectionRequest implements HttpRequest {
             return null;
 
         if (InputStream.class.isAssignableFrom(type))
-            return input;
+            return new HttpDataResponse(input, responseCode, connection.getHeaderFields());
 
         if (type.equals(String.class)) {
-            return getString(input);
+            return new HttpDataResponse(getString(input), responseCode, connection.getHeaderFields());
         }
-
-        return serializer.deserialize(getString(input), type);
+        return new HttpDataResponse(serializer.deserialize(getString(input), type), responseCode, connection.getHeaderFields());
     }
 
     private int getResponseCode(HttpURLConnection connection) throws IOException {
         try {
-            // Will throw IOException if server responds with 401.
             return connection.getResponseCode();
         } catch (IOException e) {
-            // Will return 401, because now connection has the correct internal state.
-            return connection.getResponseCode();
+            if (e.getMessage().equals("Received authentication challenge is null"))
+                return 401;
+            throw e;
         }
     }
 
     private String getString(InputStream input) throws IOException {
-        StringBuilder builder = new StringBuilder();
+        if (input == null)
+            return null;
 
+        StringBuilder builder = new StringBuilder();
         // todo need to find content encoding / getContentEncoding doesn't work
         InputStreamReader reader = new InputStreamReader(input, "UTF-8");
         int bytes;

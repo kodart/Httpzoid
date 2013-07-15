@@ -1,7 +1,5 @@
 package com.kodart.httpzoid;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
@@ -9,21 +7,20 @@ import java.util.Map;
  * (c) Artur Sharipov
  */
 public class HttpResponse {
-    private HttpURLConnection connection;
 
-    public HttpResponse(HttpURLConnection connection) {
-        this.connection = connection;
+    private int code;
+    private Map<String, List<String>> headers;
+
+    public HttpResponse(int code, Map<String, List<String>> headers) {
+        this.code = code;
+        this.headers = headers;
     }
 
-    public int getResponseCode() {
-        try {
-            return connection.getResponseCode();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public int getCode() {
+        return code;
     }
 
     public Map<String, List<String>> getHeaders() {
-        return connection.getHeaderFields();
+        return headers;
     }
 }

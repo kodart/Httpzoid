@@ -1,6 +1,7 @@
 package com.kodart.httpzoid;
 
-import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * (c) Artur Sharipov
@@ -8,8 +9,8 @@ import java.net.HttpURLConnection;
 public class HttpDataResponse extends HttpResponse {
     private Object data;
 
-    public HttpDataResponse(Object data, HttpURLConnection connection) {
-        super(connection);
+    public HttpDataResponse(Object data, int code, Map<String, List<String>> headers) {
+        super(code, headers);
         this.data = data;
     }
 
