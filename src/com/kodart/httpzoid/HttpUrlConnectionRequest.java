@@ -134,13 +134,13 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     }
 
     private Object readData(HttpURLConnection connection) throws NetworkAuthenticationException, IOException {
-        if (connection.getResponseCode() >= 500) {
+        if (getResponseCode(connection) >= 500) {
             String response = getString(connection.getErrorStream());
             Log.e(TAG, response);
             return response;
         }
 
-        if (connection.getResponseCode() >= 400) {
+        if (getResponseCode(connection) >= 400) {
             return getString(connection.getErrorStream());
         }
 
@@ -158,6 +158,16 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         }
 
         return serializer.deserialize(getString(input), type);
+    }
+
+    private int getResponseCode(HttpURLConnection connection) throws IOException {
+        try {
+            // Will throw IOException if server responds with 401.
+            return connection.getResponseCode();
+        } catch (IOException e) {
+            // Will return 401, because now connection has the correct internal state.
+            return connection.getResponseCode();
+        }
     }
 
     private String getString(InputStream input) throws IOException {
