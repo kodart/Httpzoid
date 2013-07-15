@@ -2,6 +2,7 @@ package com.kodart.httpzoid;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 /**
  * (c) Artur Sharipov
@@ -20,7 +21,13 @@ public class NetworkImpl implements Network {
 
     @Override
     public boolean isOnline() {
-        return manager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
-                || manager.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING;
+        for(NetworkInfo info: manager.getAllNetworkInfo()) {
+            Log.e("Httpzoid", info.getState().toString());
+        }
+
+        return true;
+
+//        return manager.getNetworkInfo().getState() == NetworkInfo.State.CONNECTED
+//                || manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI 1).getState() == NetworkInfo.State.CONNECTING;
     }
 }
