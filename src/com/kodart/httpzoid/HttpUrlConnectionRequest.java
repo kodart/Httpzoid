@@ -77,19 +77,19 @@ public class HttpUrlConnectionRequest implements HttpRequest {
     }
 
     @Override
-    public void execute() {
+    public Cancellable send() {
         if (network.isOffline()) {
             handler.failure(NetworkError.Offline);
             handler.complete();
-            return;
+            return Cancellable.Empty;
         }
 
-        new AsyncTask<Void, Void, Action>() {
+        return new AsyncTaskCancellable(new AsyncTask<Void, Void, Action>() {
             @Override
             protected Action doInBackground(Void... params) {
                 HttpURLConnection connection = null;
                 try {
-                    connection = (HttpURLConnection)url.openConnection(proxy);
+                    connection = (HttpURLConnection) url.openConnection(proxy);
                     init(connection);
                     sendData(connection);
                     final HttpDataResponse response = new HttpDataResponse(readData(connection), connection);
@@ -99,32 +99,26 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                             if (response.getResponseCode() < 400)
                                 handler.success(response.getData(), response);
                             else {
-                                handler.error((String)response.getData(), response);
+                                handler.error((String) response.getData(), response);
                             }
                         }
                     };
-                }
-                catch (HttpzoidException e) {
+                } catch (HttpzoidException e) {
                     Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, e.getNetworkError());
-                }
-                catch (SocketTimeoutException e) {
+                } catch (SocketTimeoutException e) {
                     Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, NetworkError.Timeout);
-                }
-                catch (JsonParseException e) {
+                } catch (JsonParseException e) {
                     Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, NetworkError.InvalidObjectFormat);
-                }
-                catch (ProtocolException e) {
+                } catch (ProtocolException e) {
                     Log.wtf(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, NetworkError.UnsupportedMethod);
-                }
-                catch (Throwable e) {
+                } catch (Throwable e) {
                     Log.wtf(TAG, e);
                     return new NetworkFailureAction(handler, NetworkError.Unknown);
-                }
-                finally {
+                } finally {
                     if (connection != null)
                         connection.disconnect();
                 }
@@ -136,7 +130,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                 handler.complete();
             }
 
-        }.execute();
+        }.execute());
     }
 
     private Object readData(HttpURLConnection connection) throws NetworkAuthenticationException, IOException {

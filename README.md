@@ -9,7 +9,7 @@ This sample will make a post request to the specified url and send User object i
 Http http = HttpFactory.create(context);
 http.post("http://example.com/users")
     .data(new User("John"))
-    .execute();
+    .send();
 ```
 
 Request with callbacks.
@@ -33,7 +33,7 @@ http.post("http://example.com/users")
         @Override
         public void complete() {
         }
-    }).execute();
+    }).send();
 ```
 
 Httpzoid works with objects or stream directly
@@ -44,7 +44,7 @@ http.get("http://example.com/users")
         @Override
         public void success(User[] users, HttpResponse response) {
         }
-    }).execute();
+    }).send();
 
 InputStream input = new FileInputStream("avatar.jpg");
 http.post("http://example.com/users/1/avatar")
@@ -54,5 +54,5 @@ http.post("http://example.com/users/1/avatar")
         public void complete() {
             input.close();
         }
-    }).execute();
+    }).send();
 ```

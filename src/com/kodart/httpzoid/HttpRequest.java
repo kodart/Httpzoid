@@ -54,5 +54,5 @@ public interface HttpRequest {
     /**
      * Execute request in background.
      */
-    public void execute();
+    public Cancellable send();
 }
