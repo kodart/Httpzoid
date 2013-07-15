@@ -161,7 +161,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         validate(connection);
 
         if (type.equals(Void.class))
-            return null;
+            return new HttpDataResponse(null, responseCode, connection.getHeaderFields());
 
         if (InputStream.class.isAssignableFrom(type))
             return new HttpDataResponse(input, responseCode, connection.getHeaderFields());
@@ -210,9 +210,17 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                 while ((bytes = ((InputStream)data).read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytes);
                 }
-            } else {
-                OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-                writer.write(serializer.serialize(data));
+            }
+            else if (data instanceof String) {
+                OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
+                writer.write((String)data);
+                writer.flush();
+            }
+            else {
+                OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
+                String output = serializer.serialize(data);
+                Log.d(TAG, output);
+                writer.write(output);
                 writer.flush();
             }
         }
