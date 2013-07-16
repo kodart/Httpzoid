@@ -16,10 +16,6 @@ public enum NetworkError {
      */
     UnsupportedMethod,
     /**
-     * Object deserialization failed
-     */
-    InvalidObjectFormat,
-    /**
      * Request timeout
      */
     Timeout, /**

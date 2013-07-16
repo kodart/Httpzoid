@@ -110,9 +110,6 @@ public class HttpUrlConnectionRequest implements HttpRequest {
                 } catch (SocketTimeoutException e) {
                     Log.e(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, NetworkError.Timeout);
-                } catch (JsonParseException e) {
-                    Log.e(TAG, e.getMessage());
-                    return new NetworkFailureAction(handler, NetworkError.InvalidObjectFormat);
                 } catch (ProtocolException e) {
                     Log.wtf(TAG, e.getMessage());
                     return new NetworkFailureAction(handler, NetworkError.UnsupportedMethod);
