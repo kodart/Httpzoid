@@ -149,8 +149,11 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (type.equals(Void.class))
             return new HttpDataResponse(null, responseCode, connection.getHeaderFields());
 
-        if (InputStream.class.isAssignableFrom(type))
-            return new HttpDataResponse(input, responseCode, connection.getHeaderFields());
+        if (InputStream.class.isAssignableFrom(type)) {
+            ByteArrayOutputStream memory = new ByteArrayOutputStream();
+            copyStream(input, memory);
+            return new HttpDataResponse(new ByteArrayInputStream(memory.toByteArray()), responseCode, connection.getHeaderFields());
+        }
 
         if (type.equals(String.class)) {
             return new HttpDataResponse(getString(input), responseCode, connection.getHeaderFields());
@@ -186,6 +189,14 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         return builder.toString();
     }
 
+    private void copyStream(InputStream input, OutputStream output) throws IOException {
+        byte[] buffer = new byte[64 * 1024];
+        int bytes;
+        while ((bytes = input.read(buffer)) != -1) {
+            output.write(buffer, 0, bytes);
+        }
+    }
+
     private void sendData(HttpURLConnection connection) throws IOException {
         if (data == null)
             return;
@@ -194,11 +205,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
         try {
             if (data instanceof InputStream) {
-                byte[] buffer = new byte[64 * 1024];
-                int bytes;
-                while ((bytes = ((InputStream)data).read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytes);
-                }
+                copyStream((InputStream)data, outputStream);
             }
             else if (data instanceof String) {
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
