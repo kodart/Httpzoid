@@ -149,7 +149,7 @@ public class HttpUrlConnectionRequest implements HttpRequest {
         if (type.equals(Void.class))
             return new HttpDataResponse(null, responseCode, connection.getHeaderFields());
 
-        if (InputStream.class.isAssignableFrom(type)) {
+        if (type.equals(InputStream.class)) {
             ByteArrayOutputStream memory = new ByteArrayOutputStream();
             copyStream(input, memory);
             return new HttpDataResponse(new ByteArrayInputStream(memory.toByteArray()), responseCode, connection.getHeaderFields());
