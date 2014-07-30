@@ -6,5 +6,5 @@ package com.kodart.httpzoid.serializers;
 public interface HttpSerializer {
     public String getContentType();
     public String serialize(Object object);
-    public Object deserialize(String value, Class type);
+    public Object deserialize(String value, Class<?> type);
 }

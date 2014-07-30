@@ -19,7 +19,7 @@ public class JsonHttpSerializer implements HttpSerializer {
     }
 
     @Override
-    public Object deserialize(String value, Class type) {
+    public Object deserialize(String value, Class<?> type) {
         return mapper.fromJson(value, type);
     }
 }

@@ -13,7 +13,7 @@ public class XmlHttpSerializer implements HttpSerializer {
     }
 
     @Override
-    public Object deserialize(String value, Class type) {
+    public Object deserialize(String value, Class<?> type) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
