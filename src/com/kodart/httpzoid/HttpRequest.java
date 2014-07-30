@@ -54,5 +54,11 @@ public interface HttpRequest {
     /**
      * Execute request in background.
      */
-    public Cancellable send();
+    public Cancellable asyncSend();
+
+    /**
+     * Execute request on the same thread.
+     * @return weather or not the request succesfully finished
+     */
+    public boolean send();
 }

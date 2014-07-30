@@ -14,6 +14,8 @@ public class NetworkFailureAction implements Action {
 
     @Override
     public void call() {
-        handler.failure(error);
+    	if (handler != null) {
+    		handler.failure(error);
+    	}
     }
 }
